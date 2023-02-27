@@ -1,6 +1,6 @@
 #include <stdbool.h>
 
-#include <messages.h>
+#include "messages.h"
 
 void initialize(int processes_count);
 void initMesh(int processes_count);

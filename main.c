@@ -1,4 +1,4 @@
-#include <communication.h>
+#include "communication.h"
 
 int main(int argc, char *argv[]) {
     int proc_qnt = 0;

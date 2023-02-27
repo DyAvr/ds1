@@ -1,6 +1,6 @@
 #include <sys/types.h>
 
-#include <communication.h>
+#include "communication.h"
 
 Mesh *mesh;
 

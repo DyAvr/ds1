@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include <ipc.h>
+#include "ipc.h"
 
 #define MAX_PROCESSES_COUNT 11
 

@@ -1,11 +1,11 @@
-#include <utils.h>
+#include "utils.h"
 
 int send(void * self, local_id dst, const Message * msg){
     Mesh *mesh = (Mesh*) self;
     Pipe *pipe = mesh->pipes[mesh->current_id][dst];
 
     size_t total_size = sizeof(MessageHeader) + msg->s_header.s_payload_len;
-    ssize_t bytes_written = write(pipe->fdWrite, msg, total_size);
+    size_t bytes_written = write(pipe->fdWrite, msg, total_size);
 
     if (bytes_written != total_size) {
         return 1;
@@ -22,7 +22,7 @@ int send_multicast(void * self, const Message * msg){
             Pipe *pipe = mesh->pipes[mesh->current_id][dst_id];
 
             size_t total_size = sizeof(MessageHeader) + msg->s_header.s_payload_len;
-            ssize_t bytes_written = write(pipe->fdWrite, msg, total_size);
+            size_t bytes_written = write(pipe->fdWrite, msg, total_size);
 
             if (bytes_written != total_size) {
                 return 1;
@@ -38,14 +38,14 @@ int receive(void * self, local_id from, Message * msg){
     Pipe *pipe = mesh->pipes[mesh->current_id][from];
 
     MessageHeader header;
-    ssize_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
+    size_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
 
     if (bytes_read != sizeof(MessageHeader)) {
         return 1;
     }
 
     char payload_buffer[header.s_payload_len];
-    ssize_t payload_bytes_read = read(pipe->fdRead, payload_buffer, header.s_payload_len);
+    size_t payload_bytes_read = read(pipe->fdRead, payload_buffer, header.s_payload_len);
 
     if (payload_bytes_read != header.s_payload_len) {
         return 1;
@@ -63,11 +63,11 @@ int receive_any(void * self, Message * msg){
         if (i != mesh->current_id) {
             Pipe *pipe = mesh->pipes[i][mesh->current_id];
             MessageHeader header;
-            ssize_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
+            size_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
 
             if (bytes_read == sizeof(MessageHeader)) {
                 char payload_buffer[header.s_payload_len];
-                ssize_t payload_bytes_read = read(pipe->fdRead, payload_buffer, header.s_payload_len);
+                size_t payload_bytes_read = read(pipe->fdRead, payload_buffer, header.s_payload_len);
 
                 if (payload_bytes_read == header.s_payload_len) {
                     msg->s_header = header;

@@ -1,4 +1,4 @@
-#include <messages.h>
+#include "messages.h"
 
 Message createMessage(uint16_t magic, local_id id, MessageType type, timestamp_t time){
     Message message;
@@ -51,7 +51,8 @@ void handleEvent(EventStatus status, Mesh* mesh){
 }
 
 void sendStartedSignal(Mesh* mesh) {
-    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, STARTED, (unsigned long)time(NULL));
+    time_t current_time = time(NULL);
+    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, STARTED, (unsigned long)current_time);
     if(send_multicast(mesh, &send) != 0) {
         printf("Can't send multicast");
         exit(1);
@@ -67,7 +68,8 @@ void waitForAllStarted(Mesh* mesh) {
 }
 
 void sendDoneSignal(Mesh* mesh) {
-    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, DONE, (unsigned long)time(NULL));
+    time_t current_time = time(NULL);
+    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, DONE, (unsigned long)current_time);
     if(send_multicast(mesh, &send) != 0) {
         printf("Can't send multicast");
         exit(1);
