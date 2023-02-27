@@ -51,8 +51,8 @@ void handleEvent(EventStatus status, Mesh* mesh){
 }
 
 void sendStartedSignal(Mesh* mesh) {
-    time_t current_time = time(NULL);
-    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, STARTED, (unsigned long)current_time);
+    unsigned long current_time = time(NULL);
+    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, STARTED, current_time);
     if(send_multicast(mesh, &send) != 0) {
         printf("Can't send multicast");
         exit(1);
@@ -68,8 +68,8 @@ void waitForAllStarted(Mesh* mesh) {
 }
 
 void sendDoneSignal(Mesh* mesh) {
-    time_t current_time = time(NULL);
-    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, DONE, (unsigned long)current_time);
+    unsigned long current_time = time(NULL);
+    Message send = createMessage(MESSAGE_MAGIC, mesh->current_id, DONE, current_time);
     if(send_multicast(mesh, &send) != 0) {
         printf("Can't send multicast");
         exit(1);

@@ -1,5 +1,3 @@
-#include <stdbool.h>
-
 #include "messages.h"
 
 void initialize(int processes_count);

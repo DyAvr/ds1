@@ -1,5 +1,3 @@
-#include <sys/types.h>
-
 #include "communication.h"
 
 Mesh *mesh;
@@ -51,13 +49,13 @@ void startChild(){
     closeUnusedPipes();
     handleEvent(EVENT_STARTED, mesh);
     handleEvent(EVENT_DONE, mesh);
-    closeLinePipes();
+    closeLineCommunication();
 }
 
 void startParent(){
     handleEvent(EVENT_RECEIVED_ALL_STARTED, mesh);
     handleEvent(EVENT_RECEIVED_ALL_DONE, mesh);
-    int value = 666;
+    int value = wait(NULL);
     while (value > 0) {
         value = wait(NULL);
     }
