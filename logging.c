@@ -1,27 +1,28 @@
 #include <stdlib.h>
+#include <fcntl.h>
 
 #include "logging.h"
 
 Logger logger;
 
 void initLogger(){
-    logger.events_log_file = fopen(events_log, "w");
-    if (logger.events_log_file == NULL) {
+    logger.fd_events_log = open(events_log, O_CREAT | O_WRONLY | O_APPEND, 0644);
+    if (logger.fd_events_log == -1) {
         perror("Error opening events log file");
         exit(1);
     }
-    logger.pipes_log_file = fopen(pipes_log, "w");
-    if (logger.pipes_log_file == NULL) {
+    logger.fd_pipes_log = open(pipes_log, O_CREAT | O_WRONLY | O_APPEND, 0644);
+    if (logger.fd_pipes_log == -1) {
         perror("Error opening pipes log file");
         exit(1);
     }
 }
 
 void closeLogger(){
-    if (fclose(logger.events_log_file) != 0) {
+    if (close(logger.fd_events_log) != 0) {
         perror("Error closing events log file");
     }
-    if (fclose(logger.pipes_log_file) != 0) {
+    if (close(logger.fd_pipes_log) != 0) {
         perror("Error closing pipes log file");
     }
 }
@@ -47,8 +48,7 @@ char* logEvent(local_id id, EventStatus status){
     }
 
     printf("%s", buf);
-    fprintf(logger.events_log_file, "%s", buf);
-    fflush(logger.events_log_file);
+    write(logger.fd_events_log, buf, strlen(buf));
 
     char *result = (char*)malloc(strlen(buf)+1);
     strcpy(result, buf);
@@ -64,6 +64,5 @@ void logPipe(local_id id, int p1, int p2, int ds_read, int ds_write){
         sprintf(buf, log_pipe_open_fmt, id, p1, p2, ds_read, ds_write);
     }
 
-    fprintf(logger.pipes_log_file, "%s", buf);
-    fflush(logger.pipes_log_file);
+    write(logger.fd_pipes_log, buf, strlen(buf));
 }

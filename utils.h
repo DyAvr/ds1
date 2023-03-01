@@ -22,7 +22,7 @@ typedef struct{
     local_id current_id;
 } Mesh;
 
-typedef struct {
-    FILE *events_log_file;
-    FILE *pipes_log_file;
+typedef struct{
+    int fd_events_log;
+    int fd_pipes_log;
 } Logger;

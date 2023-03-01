@@ -32,9 +32,7 @@ void handleEvent(EventStatus status, Mesh* mesh){
     switch (status) {
         case EVENT_STARTED:
             sendStartedSignal(mesh);
-            //printf("c_sendStartedSignal\n");
             waitForAllStarted(mesh);
-            //printf("c_waitForAllStarted\n");
             break;
         case EVENT_DONE:
             sendDoneSignal(mesh);

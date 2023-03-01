@@ -23,8 +23,9 @@ void initMesh(int processes_count){
 }
 
 void createMeshProcesses(){
+    pid_t pid;
     for (int i = 1; i < mesh->processes_count; i++) {
-        pid_t pid = fork();
+        pid = fork();
         if (pid == -1) {
             printf("Cannot create fork process");
             exit(1);
@@ -102,7 +103,6 @@ void closeLineCommunication(){
     for (int i = 0; i < mesh->processes_count; i++) {
         if (i != mesh->current_id) {
             closeSinglePipe(mesh->pipes[mesh->current_id][i]);
-            closeSinglePipe(mesh->pipes[i][mesh->current_id]);
         }
     }
 }
@@ -112,7 +112,6 @@ void closeUnusedPipes(){
         for (int j = 0; j < mesh->processes_count; j++) {
             if (isProcessPairUnused(i, j, mesh->current_id)) {
                 closeSinglePipe(mesh->pipes[i][j]);
-                closeSinglePipe(mesh->pipes[j][i]);
             }
         }
     }
@@ -139,6 +138,5 @@ void closeSinglePipe(Pipe* pipe){
 }
 
 bool isProcessPairUnused(int process1, int process2, int current_id){
-    return process1 != process2 && process1 != current_id 
-                                && process2 != current_id;
+    return process1 != process2 && process1 != current_id;
 }
