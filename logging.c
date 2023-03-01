@@ -27,7 +27,9 @@ void closeLogger(){
 }
 
 char* logEvent(local_id id, EventStatus status){
-    char *buf = (char*)malloc(sizeof (char) * 255);
+    char buf[255];
+
+    //printf("%1d: %u\n", id, status);
 
     switch(status) {
         case EVENT_STARTED:
@@ -44,10 +46,13 @@ char* logEvent(local_id id, EventStatus status){
             break;
     }
 
-    printf(buf,0);
+    printf("%s", buf);
     fprintf(logger.events_log_file, "%s", buf);
     fflush(logger.events_log_file);
-    return buf;
+
+    char *result = (char*)malloc(strlen(buf)+1);
+    strcpy(result, buf);
+    return result;
 }
 
 void logPipe(local_id id, int p1, int p2, int ds_read, int ds_write){

@@ -6,11 +6,11 @@ Message createMessage(uint16_t magic, local_id id, MessageType type, timestamp_t
     char * buf = "";
 
     if (type == DONE) {
-        buf = logEvent(EVENT_DONE, id);
+        buf = logEvent(id, EVENT_DONE);
     } 
 
     if (type == STARTED){
-        buf = logEvent(EVENT_STARTED, id);
+        buf = logEvent(id, EVENT_STARTED);
     }
 
     messageHeader = createMessageHeader(magic, strlen(buf), type, time);
@@ -32,22 +32,25 @@ void handleEvent(EventStatus status, Mesh* mesh){
     switch (status) {
         case EVENT_STARTED:
             sendStartedSignal(mesh);
+            //printf("c_sendStartedSignal\n");
             waitForAllStarted(mesh);
+            //printf("c_waitForAllStarted\n");
             break;
         case EVENT_DONE:
             sendDoneSignal(mesh);
             waitForAllDone(mesh);
             break;
         case EVENT_RECEIVED_ALL_STARTED:
-            waitForAnyStarted(mesh);
+            waitForAllStarted(mesh);
             break;
         case EVENT_RECEIVED_ALL_DONE:
-            waitForAnyDone(mesh);
+            waitForAllDone(mesh);
             break;
         default:
             printf("Invalid event status");
             exit(1);
     }
+    //printf("handled-id: %d\n", mesh->current_id);
 }
 
 void sendStartedSignal(Mesh* mesh) {
@@ -60,11 +63,13 @@ void sendStartedSignal(Mesh* mesh) {
 }
 
 void waitForAllStarted(Mesh* mesh) {
-    for(int i = 0; i < mesh->processes_count; i++) {
-        Message msg;
-        receive_any(mesh, &msg);
-        logEvent(EVENT_RECEIVED_ALL_STARTED, mesh->current_id);
+    for(int i = 1; i < mesh->processes_count; i++) {
+        if (i != mesh -> current_id){
+            Message msg;
+            receive(mesh, i, &msg);
+        }
     }
+    logEvent(mesh->current_id, EVENT_RECEIVED_ALL_STARTED);
 }
 
 void sendDoneSignal(Mesh* mesh) {
@@ -77,21 +82,11 @@ void sendDoneSignal(Mesh* mesh) {
 }
 
 void waitForAllDone(Mesh* mesh) {
-    for(int i = 0; i < mesh->processes_count; i++) {
-        Message msg;
-        receive_any(mesh, &msg);
-        logEvent(EVENT_RECEIVED_ALL_DONE, mesh->current_id);
+    for(int i = 1; i < mesh->processes_count; i++) {
+        if (i != mesh -> current_id){
+            Message msg;
+            receive(mesh, i, &msg);
+        }
     }
-}
-
-void waitForAnyStarted(Mesh* mesh) {
-    Message msg;
-    receive_any(mesh, &msg);
-    logEvent(EVENT_RECEIVED_ALL_STARTED, mesh->current_id);
-}
-
-void waitForAnyDone(Mesh* mesh) {
-    Message msg;
-    receive_any(mesh, &msg);
-    logEvent(EVENT_RECEIVED_ALL_DONE, mesh->current_id);
+    logEvent(mesh->current_id, EVENT_RECEIVED_ALL_DONE);
 }

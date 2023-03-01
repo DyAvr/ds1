@@ -11,6 +11,7 @@ int send(void * self, local_id dst, const Message * msg){
         return 1;
     }
 
+    //printf("send %d to %d\n", mesh->current_id, dst);
     return 0;
 }
 
@@ -27,6 +28,8 @@ int send_multicast(void * self, const Message * msg){
             if (bytes_written != total_size) {
                 return 1;
             }
+
+            //printf("send %d to %d\n", mesh->current_id, dst_id);
         }
     }
 
@@ -39,7 +42,6 @@ int receive(void * self, local_id from, Message * msg){
 
     MessageHeader header;
     size_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
-
     if (bytes_read != sizeof(MessageHeader)) {
         return 1;
     }
@@ -53,15 +55,17 @@ int receive(void * self, local_id from, Message * msg){
 
     msg->s_header = header;
     memcpy(msg->s_payload, payload_buffer, header.s_payload_len);
+
+    //printf("receive %d from %d\n", mesh->current_id, from);
     return 0;
 }
 
 int receive_any(void * self, Message * msg){
     Mesh *mesh = (Mesh*) self;
 
-    for (local_id i = 0; i < mesh->processes_count; i++) {
+    for (local_id i = 1; i < mesh->processes_count; i++) {
         if (i != mesh->current_id) {
-            Pipe *pipe = mesh->pipes[i][mesh->current_id];
+            Pipe *pipe = mesh->pipes[mesh->current_id][i];
             MessageHeader header;
             size_t bytes_read = read(pipe->fdRead, &header, sizeof(MessageHeader));
 
@@ -72,6 +76,7 @@ int receive_any(void * self, Message * msg){
                 if (payload_bytes_read == header.s_payload_len) {
                     msg->s_header = header;
                     memcpy(msg->s_payload, payload_buffer, header.s_payload_len);
+                    //printf("receive %d from %d\n", mesh->current_id, i);
                     return 0;
                 }
             }

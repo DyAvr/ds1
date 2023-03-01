@@ -9,5 +9,3 @@ void sendStartedSignal(Mesh* mesh);
 void waitForAllStarted(Mesh* mesh);
 void sendDoneSignal(Mesh* mesh);
 void waitForAllDone(Mesh* mesh);
-void waitForAnyStarted(Mesh* mesh);
-void waitForAnyDone(Mesh* mesh);

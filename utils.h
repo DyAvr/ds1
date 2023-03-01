@@ -4,10 +4,12 @@
 #include <string.h>
 #include <stdbool.h>
 #include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
 #include "ipc.h"
 
-#define MAX_PROCESSES_COUNT 11
+#define MAX_PROCESSES_COUNT 10
 
 typedef struct{
     int fdRead;
@@ -16,7 +18,7 @@ typedef struct{
 
 typedef struct{
     int processes_count;
-    Pipe *pipes[MAX_PROCESSES_COUNT][MAX_PROCESSES_COUNT];
+    Pipe *pipes[MAX_PROCESSES_COUNT+1][MAX_PROCESSES_COUNT+1];
     local_id current_id;
 } Mesh;
 
