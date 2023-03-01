@@ -32,8 +32,19 @@ void createMeshProcesses(){
         } else if (pid == 0) {
             //printf("startChild\n");
             mesh->current_id = i;
+            // for (int j = 0; j < mesh->processes_count; j++){
+            //     if (j!= i){
+            //         close(mesh->pipes[j][i]->fdRead);
+            //     }
+            // }
             startChild();
             exit(0);
+        } else {
+            for (int j = 0; j < mesh->processes_count; j++){
+                if (j!= i){
+                    close(mesh->pipes[i][j]->fdWrite);
+                }
+            }
         }
     }
     mesh->current_id = 0;
@@ -83,6 +94,7 @@ void startChild(){
 }
 
 void startParent(){
+    closeUnusedPipes();
     handleEvent(EVENT_RECEIVED_ALL_STARTED, mesh);
     //printf("all_started\n");
     handleEvent(EVENT_RECEIVED_ALL_DONE, mesh);
